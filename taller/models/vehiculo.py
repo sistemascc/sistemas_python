@@ -13,36 +13,35 @@ class Vehicle(models.Model):
     active = fields.Boolean(string="Active", default=True)
     matricula = fields.Char("Placa")
 
-#Trabajando Restricciones en Odoo(sql_constraints)
+    # Trabajando Restricciones en Odoo(sql_constraints)
     _sql_constraints = [
         ('vehiculo_name_uniq',
          'unique (name)',
          'Nombre tiene que ser unico.')
     ]
 
-#Trabajando con Restricciones en Odoo (Matricula)
+    tag_ids = fields.Many2many(
+        comodel_name="vehiculo.tag"
+    )
+
+    # Trabajando con Restricciones en Odoo (Matricula)
     @api.constrains('matricula')
     def _check_matricula(self):
-        #comprobamos que sea unica
+        # comprobamos que sea unica
         domain = [
             "|",
             ('matricula', '=', self.matricula),
             ('id', '!=', self.id),
         ]
         vehiculos = self.search(domain)
-        if vehiculo:
+        if vehiculos:
             raise exceptions.ValidationError("Matricula duplicada")
 
 
+class VehiculoTag(models.Model):
+    _name = "vehiculo.tag"
 
-
-
-
-
-
-
-
-
+    name = fields.Char(string="Name")
 
 
 """
@@ -60,8 +59,6 @@ Nota: Si se desea Clonar se ocupa el:
 En caso contrario de deja la herencia como esta con el _inherit
 
 """
-
-
 
 # class taller(models.Model):
 #     _name = 'taller.taller'
